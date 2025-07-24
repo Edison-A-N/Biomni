@@ -1477,6 +1477,7 @@ Each library is listed with its description to help you understand its functiona
             message = s["messages"][-1]
             out = pretty_print(message)
             self.log.append(out)
+            yield out
 
         return self.log, message.content
 

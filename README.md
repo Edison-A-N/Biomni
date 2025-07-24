@@ -1,3 +1,17 @@
+# 🚀 New Features: Streaming Output & OpenAI-Compatible API
+
+> **✨ Enhanced Biomni Experience** - Now with real-time streaming output and production-ready API server!
+
+## 🔥 What's New
+
+- **⚡ Real-time Streaming**: Monitor agent execution progress live
+- **🌐 OpenAI-Compatible API**: Deploy as production HTTP service  
+- **🔧 Multiple Deployment Options**: Python API, HTTP Server, Web UI
+
+**[📖 View Full Feature Documentation →](./API_CHANGES.md)**
+
+---
+
 <p align="center">
   <img src="./figs/biomni_logo.png" alt="Biomni Logo" width="600px" />
 </p>
