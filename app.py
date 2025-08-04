@@ -20,6 +20,7 @@ except ImportError as e:
 
 class BiomniConfig(BaseSettings):
     data_path: str = Field(default="./data", description="Path to data directory", alias="DATA_PATH")
+    mcp_path: str = Field(default="mcp_config.yaml", description="Path to MCP directory", alias="MCP_PATH")
     llm: str = Field(default="gpt-4", description="LLM model to use", alias="LLM")
     base_url: str = Field(default=None, description="Base URL for API", alias="OPENAI_BASE_URL")
     api_key: str = Field(default=None, description="API key for authentication", alias="OPENAI_API_KEY")
@@ -50,6 +51,7 @@ async def generate_stream_response(task: str):
             return
 
         agent = A1(path=config.data_path, llm=config.llm, base_url=config.base_url, api_key=config.api_key)
+        agent.add_mcp(config.mcp_path)
 
         # Directly iterate over the generator from agent.go()
         for output in agent.go(task):
@@ -101,6 +103,7 @@ async def chat_completions(request: ChatCompletionRequest):
                 raise HTTPException(status_code=500, detail="Biomni agent not available")
 
             agent = A1(path=config.data_path, llm=config.llm, base_url=config.base_url, api_key=config.api_key)
+            agent.add_mcp(config.mcp_path)
 
             all_outputs = []
 
