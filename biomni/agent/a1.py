@@ -1526,41 +1526,6 @@ Each library is listed with its description to help you understand its functiona
             # Yield the current step
             yield {"output": out}
 
-        return self.log, message.content
-
-    def go_stream(self, prompt) -> Generator[dict, None, None]:
-        """Execute the agent with the given prompt and return a generator that yields each step.
-
-        This function returns a generator that yields each step of the agent's execution,
-        allowing for real-time monitoring of the agent's progress.
-
-        Args:
-            prompt: The user's query
-
-        Yields:
-            dict: Each step of the agent's execution containing the current message and state
-        """
-        self.critic_count = 0
-        self.user_task = prompt
-
-        if self.use_tool_retriever:
-            selected_resources_names = self._prepare_resources_for_retrieval(prompt)
-            self.update_system_prompt_with_selected_resources(selected_resources_names)
-
-        inputs = {"messages": [HumanMessage(content=prompt)], "next_step": None}
-        config = {"recursion_limit": 500, "configurable": {"thread_id": 42}}
-        self.log = []
-
-        for s in self.app.stream(inputs, stream_mode="values", config=config):
-            message = s["messages"][-1]
-            out = pretty_print(message)
-            self.log.append(out)
-
-            # Yield the current step
-            yield {"output": out}
-
-        return self.log, message.content
-
     def update_system_prompt_with_selected_resources(self, selected_resources):
         """Update the system prompt with the selected resources."""
         # Extract tool descriptions for the selected tools
