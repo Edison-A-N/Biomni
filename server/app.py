@@ -1,15 +1,10 @@
-import asyncio
 import json
-import os
-import sys
 import time
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "biomni"))
 
 try:
     from biomni.agent import A1
