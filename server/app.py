@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 from fastapi import FastAPI, HTTPException
@@ -13,19 +14,21 @@ except ImportError as e:
     A1 = None
 
 
-class BiomniConfig(BaseSettings):
-    data_path: str = Field(default="./data", description="Path to data directory", alias="DATA_PATH")
-    mcp_path: str = Field(default="mcp_config.yaml", description="Path to MCP directory", alias="MCP_PATH")
-    llm: str = Field(default="gpt-4", description="LLM model to use", alias="LLM")
-    base_url: str = Field(default=None, description="Base URL for API", alias="OPENAI_BASE_URL")
-    api_key: str = Field(default=None, description="API key for authentication", alias="OPENAI_API_KEY")
+class BiomniServerConfig(BaseSettings):
+    mcp_config_path: str = Field(default="mcp_config.yaml", description="Path to MCP directory", alias="MCP_CONFIG_PATH")
 
     model_config = SettingsConfigDict(env_file=".app.env", env_file_encoding="utf-8", extra="ignore")
 
 
-config = BiomniConfig()
+config = BiomniServerConfig()
 
 app = FastAPI(title="Biomni API", description="API for running Biomni biomedical AI agent tasks", version="1.0.0")
+
+def build_agent():
+    agent = A1()
+    if config.mcp_config_path and os.path.exists(config.mcp_config_path):
+        agent.add_mcp(config.mcp_config_path)
+    return agent
 
 
 class Message(BaseModel):
@@ -45,8 +48,7 @@ async def generate_stream_response(task: str):
             yield f"data: {json.dumps({'error': 'Biomni agent not available'})}\n\n"
             return
 
-        agent = A1()
-        agent.add_mcp(config.mcp_path)
+        agent = build_agent()
 
         # Directly iterate over the generator from agent.go()
         for output in agent.go_stream(task):
@@ -98,8 +100,7 @@ async def chat_completions(request: ChatCompletionRequest):
             if A1 is None:
                 raise HTTPException(status_code=500, detail="Biomni agent not available")
 
-            agent = A1()
-            agent.add_mcp(config.mcp_path)
+            agent = build_agent()
 
             all_outputs = []
 

@@ -62,7 +62,13 @@ Biomni agent can perform comprehensive ADMET (Absorption, Distribution, Metaboli
 - ✅ **OpenAI API Compatible** - Supports all mainstream OpenAI client libraries
 - ✅ **Streaming Response** - Real-time Biomni agent execution results
 
+## Configuration
 
+Edit `.app.env` file:
+
+```env
+MCP_CONFIG_PATH=./mcp_config.yaml
+```
 
 ## API Documentation
 
