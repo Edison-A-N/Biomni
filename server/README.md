@@ -10,9 +10,9 @@ A FastAPI-based server that provides OpenAI Chat Completions API compatible inte
 ```bash
 cd server
 pip install -r requirements.txt
-cp .app.env.example .app.env
-# Edit .app.env to configure API keys etc.
 ```
+
+**Note**: Environment configuration follows Biomni's default settings. The server will use the standard Biomni configuration for data paths, LLM models, and API endpoints.
 
 ### 2. Start Server
 
@@ -62,16 +62,7 @@ Biomni agent can perform comprehensive ADMET (Absorption, Distribution, Metaboli
 - ✅ **OpenAI API Compatible** - Supports all mainstream OpenAI client libraries
 - ✅ **Streaming Response** - Real-time Biomni agent execution results
 
-## Configuration
 
-Edit `.app.env` file:
-
-```env
-DATA_PATH=./data
-LLM=gpt-4
-OPENAI_BASE_URL=http://your-llm-server.com/v1
-OPENAI_API_KEY=sk-your-api-key
-```
 
 ## API Documentation
 

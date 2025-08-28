@@ -45,7 +45,7 @@ async def generate_stream_response(task: str):
             yield f"data: {json.dumps({'error': 'Biomni agent not available'})}\n\n"
             return
 
-        agent = A1(path=config.data_path, llm=config.llm, base_url=config.base_url, api_key=config.api_key)
+        agent = A1()
         agent.add_mcp(config.mcp_path)
 
         # Directly iterate over the generator from agent.go()
@@ -98,7 +98,7 @@ async def chat_completions(request: ChatCompletionRequest):
             if A1 is None:
                 raise HTTPException(status_code=500, detail="Biomni agent not available")
 
-            agent = A1(path=config.data_path, llm=config.llm, base_url=config.base_url, api_key=config.api_key)
+            agent = A1()
             agent.add_mcp(config.mcp_path)
 
             all_outputs = []
