@@ -806,6 +806,71 @@ def parse_hpo_obo(file_path):
 
 def textify_api_dict(api_dict):
     """Convert a nested API dictionary to a nicely formatted string."""
+
+    def process_sub_properties(method: dict, param_name: str, lines: list[str]):
+        """
+        Process sub-properties of a complex parameter (object type) and add formatted descriptions to lines.
+
+        Args:
+            method: Method dictionary containing parameters
+            param_name: Name of the parameter to process
+            lines: List to append formatted parameter descriptions
+
+        Returns:
+            List of formatted parameter descriptions
+        """  # noqa: W293
+
+        def recursive_process_sub_properties(
+            param_details: dict, current_param_name: str, is_required: bool, indent: int = 6
+        ):
+            """
+            Recursively process nested object properties and add formatted descriptions.
+
+            Args:
+                param_details: Parameter details dictionary
+                current_param_name: Current parameter name being processed
+                is_required: Whether the current parameter is required
+            """
+            required_sub_params = param_details.get("required", [])
+            if param_details.get("type") == "object" and param_details.get("properties"):
+                # Handle nested object with properties
+                for sub_param_name, sub_param_details in param_details["properties"].items():
+                    sub_is_required = sub_param_name in required_sub_params
+                    recursive_process_sub_properties(sub_param_details, sub_param_name, sub_is_required, indent + 2)
+            elif param_details.get("type") == "array":
+                description = param_details.get("description", "No description")
+                default_value = param_details.get("default", "None")
+                required_marker = " [Required]" if is_required else "[Optional]"
+                lines.append(
+                    f"{indent * ' '}- {current_param_name} {required_marker} (array): {description} [Default: {default_value}]"
+                )
+                items = param_details.get("items", {})
+                recursive_process_sub_properties(items, "items", False, indent + 2)
+            else:
+                # Handle primitive type parameter
+                param_type = param_details.get("type", "unknown")
+                description = param_details.get("description", "No description")
+                default_value = param_details.get("default", "None")
+                required_marker = " [Required]" if is_required else "[Optional]"
+                lines.append(
+                    f"{indent * ' '}- {current_param_name} {required_marker} ({param_type}): {description} [Default: {default_value}]"
+                )
+
+        # Get parameter details from method
+        param_details = method.get("parameters", {}).get(param_name, {})
+
+        if not param_details:
+            return lines
+
+        # Check if parameter is an object with properties
+        if param_details.get("type") == "object" and param_details.get("properties"):
+            required_params = param_details.get("required", [])
+            for sub_param_name, sub_param_details in param_details["properties"].items():
+                sub_is_required = sub_param_name in required_params
+                recursive_process_sub_properties(sub_param_details, sub_param_name, sub_is_required)
+
+        return lines
+
     lines = []
     for category, methods in api_dict.items():
         lines.append(f"Import file: {category}")
@@ -824,6 +889,7 @@ def textify_api_dict(api_dict):
                     param_desc = param.get("description", "No description")
                     param_default = param.get("default", "None")
                     lines.append(f"    - {param_name} ({param_type}): {param_desc} [Default: {param_default}]")
+                    process_sub_properties(method, param_name, lines)
 
             # Process optional parameters
             opt_params = method.get("optional_parameters", [])
@@ -835,6 +901,7 @@ def textify_api_dict(api_dict):
                     param_desc = param.get("description", "No description")
                     param_default = param.get("default", "None")
                     lines.append(f"    - {param_name} ({param_type}): {param_desc} [Default: {param_default}]")
+                    process_sub_properties(method, param_name, lines)
 
             lines.append("")  # Empty line between methods
         lines.append("")  # Extra empty line after each category
