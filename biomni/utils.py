@@ -826,9 +826,9 @@ def textify_api_dict(api_dict):
                     lines.append(f"    - {param_name} ({param_type}): {param_desc} [Default: {param_default}]")
                     params_info = method.get("parameters", {}).get(param_name, {})
                     if 'properties' in params_info:
-                        lines.append(f"    - Properties: {params_info.get('properties', {})}")
+                        lines.append(f"{6 * ' '}- Properties: {params_info.get('properties', {})}")
                     if 'items' in params_info:
-                        lines.append(f"    - Items Details: {params_info.get('items', {})}")
+                        lines.append(f"{6 * ' '}- Items Details: {params_info.get('items', {})}")
 
             # Process optional parameters
             opt_params = method.get("optional_parameters", [])
@@ -842,9 +842,9 @@ def textify_api_dict(api_dict):
                     lines.append(f"    - {param_name} ({param_type}): {param_desc} [Default: {param_default}]")
                     params_info = method.get("parameters", {}).get(param_name, {})
                     if 'properties' in params_info:
-                        lines.append(f"    - Properties: {params_info.get('properties', {})}")
+                        lines.append(f"{6 * ' '}- Properties: {params_info.get('properties', {})}")
                     if 'items' in params_info:
-                        lines.append(f"    - Items Details: {params_info.get('items', {})}")
+                        lines.append(f"{6 * ' '}- Items Details: {params_info.get('items', {})}")
 
             lines.append("")  # Empty line between methods
         lines.append("")  # Extra empty line after each category
